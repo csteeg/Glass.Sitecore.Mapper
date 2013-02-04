@@ -34,5 +34,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
         public string Name { get; set; }
         public ID SectionId { get; set; }
         public ID TemplateId { get; set; }
+
+        public bool Existing { get; set; }
     }
 }
