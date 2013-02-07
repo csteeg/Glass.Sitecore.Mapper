@@ -245,11 +245,11 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                     var exists = existing.FirstOrDefault(def => def.Name.Equals(section));
                     if (exists != null)
                     {
-                        record = new SectionInfo(section.SectionName, exists.ID, itemDefinition.ID, section.SectionSortOrder) {Existing = true};
+                        record = new SectionInfo(section, exists.ID, itemDefinition.ID) {Existing = true};
                     }
                     else
                     {
-                        record = new SectionInfo(section.SectionName, new ID(Guid.NewGuid()), itemDefinition.ID, section.SectionSortOrder);
+                        record = new SectionInfo(section, new ID(Guid.NewGuid()), itemDefinition.ID);
                     }
                     SectionTable.Add(record);
                 }
