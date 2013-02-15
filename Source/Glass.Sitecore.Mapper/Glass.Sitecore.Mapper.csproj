@@ -1,355 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Framework Condition=" '$(Framework)' == '' ">NET40</Framework>
-    <preMVC Condition=" '$(preMVC)' == '' ">0</preMVC>
-    <preMVC Condition=" '$(Framework)' == 'NET35' ">1</preMVC>
-    <ExtraConstants>$(Framework)</ExtraConstants>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>bin\$(Configuration)\$(Framework)</OutputPath>
-    <OutputPath Condition=" '$(preMVC)' == '1' ">bin\$(Configuration)\$(Framework)-preMVC</OutputPath>
-    <ExtraConstants Condition=" '$(preMVC)' == '1' ">preMVC;$(ExtraConstants)</ExtraConstants>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{564CDD78-0939-436B-9C90-7AF9D95B9024}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Glass.Sitecore.Mapper</RootNamespace>
-    <AssemblyName>Glass.Sitecore.Mapper</AssemblyName>
-    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == ''">v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;$(ExtraConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Glass.Sitecore.Mapper.XML</DocumentationFile>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;$(ExtraConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Glass.Sitecore.Mapper.XML</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup Condition=" '$(Framework)' == 'NET35' " >
-    <Reference Include="Castle.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath >..\..\packages\Castle.Core.3.1.0\lib\net35\Castle.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Framework)' != 'NET35' " >
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="Castle.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Castle.Core.3.1.0\lib\net40-client\Castle.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(preMVC)' == '1' " >
-    <Reference Include="Sitecore.Kernel">
-      <HintPath>..\..\Depends\Sitecore.Kernel.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(preMVC)' != '1' " >
-    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Sitecore.Kernel">
-      <HintPath>..\..\Depends\66\Sitecore.Kernel.dll</HintPath>
-    </Reference>
-    <Reference Include="Sitecore.Mvc">
-      <HintPath>..\..\Depends\66\Sitecore.Mvc.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Web">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ClassManager.cs" />
-    <Compile Include="CodeFirst\FieldInfo.cs" />
-    <Compile Include="CodeFirst\GlassDataProvider.cs" />
-    <Compile Include="CodeFirst\SectionInfo.cs" />
-    <Compile Include="Configuration\Attributes\AttributeConfigurationLoader.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreFieldFieldAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreChildrenAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreClassAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreFieldAttribute.cs" />
-    <Compile Include="Configuration\Attributes\AbstractSitecorePropertyAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreItemAttribute.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreItem.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreLinked.cs" />
-    <Compile Include="Configuration\SitecoreFieldSettings.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreIdAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreParentAttribute.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreInfoAttribute.cs" />
-    <Compile Include="Configuration\SitecoreFieldType.cs" />
-    <Compile Include="Configuration\SitecoreInfoType.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreQueryAttribute.cs" />
-    <Compile Include="Configuration\Fluent\FluentConfigurationLoader.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreClass.cs" />
-    <Compile Include="Configuration\AbstractConfigurationLoader.cs" />
-    <Compile Include="Configuration\Attributes\SitecoreLinkedAttribute.cs" />
-    <Compile Include="Configuration\SitecoreInfoUrlOptions.cs" />
-    <Compile Include="Configuration\SitecoreLinkedOptions.cs" />
-    <Compile Include="Configuration\SitecoreProperty.cs" />
-    <Compile Include="Configuration\SitecoreClassConfig.cs" />
-    <Compile Include="Context.cs" />
-    <Compile Include="Dashboard\Controllers\DetailsController.cs" />
-    <Compile Include="Dashboard\Controllers\ListController.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Controllers\QueryController.cs" />
-    <Compile Include="Dashboard\Controllers\StaticController.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\DashboardGlobals.cs" />
-    <Compile Include="Dashboard\DashboardHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\DashboardLoader.cs" />
-    <Compile Include="Dashboard\DashboardUtilities.cs" />
-    <Compile Include="Dashboard\DashboardExtensionMethods.cs" />
-    <Compile Include="Dashboard\Model\Data\ItemData.cs" />
-    <Compile Include="Dashboard\Model\Data\TemplateData.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassChildren.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassClass.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassClassSummary.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassField.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassItem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassLinked.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassParent.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\Data\PathQuery.cs" />
-    <Compile Include="Dashboard\Model\GlassQuery.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Model\GlassQueryResult.cs" />
-    <Compile Include="Dashboard\Model\GlassTemplate.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Web\AbstractController.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Web\AbstractView.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Web\HtmlView.cs" />
-    <Compile Include="Dashboard\Web\JsonView.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Dashboard\Web\ManifestView.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Data\QueryParameters\ItemEscapedPathParameter.cs" />
-    <Compile Include="Data\SitecoreFieldLongHandler.cs" />
-    <Compile Include="Data\SitecoreFieldNameValueCollectionHandler.cs" />
-    <Compile Include="Data\SitecoreFieldNullableHandler.cs" />
-    <Compile Include="Data\SitecoreFieldRulesHandler.cs" />
-    <Compile Include="Data\SitecoreItemHandler.cs" />
-    <Compile Include="Data\SitecoreLinkedHandler.cs" />
-    <Compile Include="Data\QueryParameters\ItemIdNoBracketsParameter.cs" />
-    <Compile Include="Data\QueryParameters\ISitecoreQueryParameter.cs" />
-    <Compile Include="Data\QueryParameters\ItemDateNowParameter.cs" />
-    <Compile Include="Data\QueryParameters\ItemIdParameter.cs" />
-    <Compile Include="Data\QueryParameters\ItemPathParameter.cs" />
-    <Compile Include="Data\SitecoreChildrenHandler.cs" />
-    <Compile Include="Data\SitecoreFieldEnumHandler.cs" />
-    <Compile Include="Data\SitecoreFieldStreamHandler.cs" />
-    <Compile Include="Data\SitecoreFieldClassHandler.cs" />
-    <Compile Include="Data\SitecoreFieldDecimalHandler.cs" />
-    <Compile Include="Data\AbstractSitecoreDataHandler.cs" />
-    <Compile Include="Data\AbstractSitecoreField.cs" />
-    <Compile Include="Data\SitecoreFieldBooleanHandler.cs" />
-    <Compile Include="Data\SitecoreFieldDateTimeHandler.cs" />
-    <Compile Include="Data\SitecoreFieldDoubleHandler.cs" />
-    <Compile Include="Data\SitecoreFieldFileHandler.cs" />
-    <Compile Include="Data\SitecoreFieldFloatHandler.cs" />
-    <Compile Include="Data\SitecoreFieldGuidHandler.cs" />
-    <Compile Include="Data\SitecoreFieldIEnumerableHandler.cs" />
-    <Compile Include="Data\SitecoreFieldImageHandler.cs" />
-    <Compile Include="Data\SitecoreFieldIntegerHandler.cs" />
-    <Compile Include="Data\SitecoreFieldLinkHandler.cs" />
-    <Compile Include="Data\SitecoreFieldTriStateHandler.cs" />
-    <Compile Include="Data\SitecoreParentHandler.cs" />
-    <Compile Include="Data\SitecoreIdDataHandler.cs" />
-    <Compile Include="Data\SitecoreFieldStringHandler.cs" />
-    <Compile Include="Data\SitecoreInfoHandler.cs" />
-    <Compile Include="Data\SitecoreQueryHandler.cs" />
-    <Compile Include="DefaultTypeInferrer.cs" />
-    <Compile Include="DisplayNameAttribute.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="FakePropertyInfo.cs" />
-    <Compile Include="FieldTypes\Blob.cs" />
-    <Compile Include="FieldTypes\File.cs" />
-    <Compile Include="FieldTypes\Image.cs" />
-    <Compile Include="FieldTypes\Link.cs" />
-    <Compile Include="FieldTypes\LinkType.cs" />
-    <Compile Include="FieldTypes\TriState.cs" />
-    <Compile Include="GlassHtml.cs" />
-    <Compile Include="InstanceContext.cs" />
-    <Compile Include="ISitecoreContext.cs" />
-    <Compile Include="ISitecoreService.cs" />
-    <Compile Include="Enumerable.cs" />
-    <Compile Include="ItemExtensions.cs" />
-    <Compile Include="RenderField\AbstractParameters.cs" />
-    <Compile Include="RenderField\DateParameters.cs" />
-    <Compile Include="RenderField\ImageParameters.cs" />
-    <Compile Include="RenderField\LinkParameters.cs" />
-    <Compile Include="NullLog.cs" />
-    <Compile Include="PersistenceException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Proxies\InterfaceMethodInterceptor.cs" />
-    <Compile Include="Proxies\ProxyBlobInterceptor.cs" />
-    <Compile Include="Proxies\ProxyClassInterceptor.cs" />
-    <Compile Include="Proxies\ProxyGenerator.cs" />
-    <Compile Include="Proxies\ProxyGeneratorHook.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="SitecoreContext.cs" />
-    <Compile Include="SitecoreIdException.cs" />
-    <Compile Include="SitecoreService.cs" />
-    <Compile Include="Utility.cs" />
-    <Compile Include="Web\Ui\AbstractGlassPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Ui\AbstractGlassUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Ui\GlassEditFrame.cs" />
-    <Compile Include="Web\Ui\GlassPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Ui\GlassUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(preMVC)' != '1' ">
-    <Compile Include="Pipelines\Response\GetModel.cs" />
-    <Compile Include="Web\Mvc\GlassView.cs" />
-    <Compile Include="Web\Mvc\HtmlHelperExtensions.cs" />
-    <Compile Include="Web\Mvc\MvcEditFrame.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Framework)' != 'NET35' ">
-    <Compile Include="Dynamic\Dy.cs" />
-    <Compile Include="Dynamic\DynamicCollection.cs" />
-    <Compile Include="Dynamic\DynamicField.cs" />
-    <Compile Include="Dynamic\DynamicItem.cs" />
-    <Compile Include="Web\Ui\GlassDynamicPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Ui\GlassDynamicUserControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Configuration\Fluent\AbstractSitecoreAttributeBuilder.cs" />
-    <Compile Include="Configuration\Fluent\ISitecoreClass.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreChildren.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreField.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreId.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreInfo.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreParent.cs" />
-    <Compile Include="Configuration\Fluent\SitecoreQuery.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dashboard\List\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Css\Dashboard.css" />
-    <EmbeddedResource Include="Dashboard\Html\List.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Js\List.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Html\HtmlHeader.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Html\HtmlFooter.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Html\Details.htm" />
-    <EmbeddedResource Include="Dashboard\Js\Details.js" />
-    <EmbeddedResource Include="Dashboard\Js\General.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Html\Query.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Js\Query.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Images\ajax-loader.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="BeforeBuild">
-    <Message Text="ExtraConstants: $(ExtraConstants)" Importance="high" />
-    <Message Text="preMVC: $(preMVC)" Importance="high" />
-    <Message Text="Framework: $(Framework)" Importance="high" />
-    <Message Text="TargetFrameworkVersion: $(TargetFrameworkVersion)" Importance="high" />
-  </Target>
-  <Target Name="AfterBuild" Condition=" '$(nestedbuild)' == '' AND '$(Configuration)' == 'Release'">
-   <Message Text="----------- done building -------------------- starting next one: ---------------" />
-    <MSBuild Condition=" '$(Framework)' != 'NET35'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET35;preMVC=1;nestedbuild=1;TargetFrameworkVersion=v3.5" RunEachTargetSeparately="true" />
-    <MSBuild Condition=" '$(Framework)' == 'NET40' AND '$(preMVC)' == '0'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40;preMVC=1;nestedbuild=1;TargetFrameworkVersion=v4.0" RunEachTargetSeparately="true" />
-    <MSBuild Condition=" '$(Framework)' == 'NET40' AND '$(preMVC)' == '1'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40;preMVC=0;nestedbuild=1;TargetFrameworkVersion=v4.0" RunEachTargetSeparately="true" />
-  </Target>
-</Project>
+﻿<?xml version="1.0" encoding="utf-8"?><Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  <PropertyGroup>    <Framework Condition=" '$(Framework)' == '' ">NET40</Framework>    <preMVC Condition=" '$(preMVC)' == '' ">0</preMVC>    <preMVC Condition=" '$(Framework)' == 'NET35' ">1</preMVC>    <ExtraConstants>$(Framework)</ExtraConstants>  </PropertyGroup>  <PropertyGroup>    <OutputPath>bin\$(Configuration)\$(Framework)</OutputPath>    <OutputPath Condition=" '$(preMVC)' == '1' ">bin\$(Configuration)\$(Framework)-preMVC</OutputPath>    <ExtraConstants Condition=" '$(preMVC)' == '1' ">preMVC;$(ExtraConstants)</ExtraConstants>  </PropertyGroup>  <PropertyGroup>    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>    <ProductVersion>9.0.30729</ProductVersion>    <SchemaVersion>2.0</SchemaVersion>    <ProjectGuid>{564CDD78-0939-436B-9C90-7AF9D95B9024}</ProjectGuid>    <OutputType>Library</OutputType>    <AppDesignerFolder>Properties</AppDesignerFolder>    <RootNamespace>Glass.Sitecore.Mapper</RootNamespace>    <AssemblyName>Glass.Sitecore.Mapper</AssemblyName>    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == ''">v4.0</TargetFrameworkVersion>    <FileAlignment>512</FileAlignment>    <FileUpgradeFlags>    </FileUpgradeFlags>    <OldToolsVersion>3.5</OldToolsVersion>    <UpgradeBackupLocation />    <TargetFrameworkProfile />  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">    <DebugSymbols>true</DebugSymbols>    <DebugType>full</DebugType>    <Optimize>false</Optimize>    <DefineConstants>DEBUG;TRACE;$(ExtraConstants)</DefineConstants>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <DocumentationFile>bin\Debug\Glass.Sitecore.Mapper.XML</DocumentationFile>    <UseVSHostingProcess>true</UseVSHostingProcess>  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">    <DebugType>pdbonly</DebugType>    <Optimize>true</Optimize>    <DefineConstants>TRACE;$(ExtraConstants)</DefineConstants>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <DocumentationFile>bin\Release\Glass.Sitecore.Mapper.XML</DocumentationFile>  </PropertyGroup>  <ItemGroup Condition=" '$(Framework)' == 'NET35' " >    <Reference Include="Castle.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">      <SpecificVersion>False</SpecificVersion>      <HintPath >..\..\packages\Castle.Core.3.1.0\lib\net35\Castle.Core.dll</HintPath>    </Reference>  </ItemGroup>  <ItemGroup Condition=" '$(Framework)' != 'NET35' " >    <Reference Include="System.Web.Extensions" />    <Reference Include="Castle.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">      <SpecificVersion>False</SpecificVersion>      <HintPath>..\..\packages\Castle.Core.3.1.0\lib\net40-client\Castle.Core.dll</HintPath>    </Reference>  </ItemGroup>  <ItemGroup Condition=" '$(preMVC)' == '1' " >    <Reference Include="Sitecore.Kernel">      <HintPath>..\..\Depends\Sitecore.Kernel.dll</HintPath>    </Reference>  </ItemGroup>  <ItemGroup Condition=" '$(preMVC)' != '1' " >    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />    <Reference Include="Sitecore.Kernel">      <HintPath>..\..\Depends\66\Sitecore.Kernel.dll</HintPath>    </Reference>    <Reference Include="Sitecore.Mvc">      <HintPath>..\..\Depends\66\Sitecore.Mvc.dll</HintPath>    </Reference>  </ItemGroup>  <ItemGroup>    <Reference Include="System">      <RequiredTargetFramework>3.5</RequiredTargetFramework>    </Reference>    <Reference Include="System.configuration" />    <Reference Include="System.Core">      <RequiredTargetFramework>3.5</RequiredTargetFramework>    </Reference>    <Reference Include="System.Web">      <RequiredTargetFramework>3.5</RequiredTargetFramework>    </Reference>    <Reference Include="System.Xml.Linq">      <RequiredTargetFramework>3.5</RequiredTargetFramework>    </Reference>    <Reference Include="System.Data.DataSetExtensions">      <RequiredTargetFramework>3.5</RequiredTargetFramework>    </Reference>    <Reference Include="System.Data" />    <Reference Include="System.Xml" />  </ItemGroup>  <ItemGroup>    <Compile Include="ClassManager.cs" />    <Compile Include="CodeFirst\FieldInfo.cs" />    <Compile Include="CodeFirst\GlassDataProvider.cs" />    <Compile Include="CodeFirst\SectionInfo.cs" />    <Compile Include="Configuration\Attributes\AttributeConfigurationLoader.cs" />    <Compile Include="Configuration\Attributes\SitecoreFieldFieldAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreChildrenAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreClassAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreFieldAttribute.cs" />    <Compile Include="Configuration\Attributes\AbstractSitecorePropertyAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreItemAttribute.cs" />    <Compile Include="Configuration\Fluent\SitecoreItem.cs" />    <Compile Include="Configuration\Fluent\SitecoreLinked.cs" />    <Compile Include="Configuration\SitecoreFieldSettings.cs" />    <Compile Include="Configuration\Attributes\SitecoreIdAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreParentAttribute.cs" />    <Compile Include="Configuration\Attributes\SitecoreInfoAttribute.cs" />    <Compile Include="Configuration\SitecoreFieldType.cs" />    <Compile Include="Configuration\SitecoreInfoType.cs" />    <Compile Include="Configuration\Attributes\SitecoreQueryAttribute.cs" />    <Compile Include="Configuration\Fluent\FluentConfigurationLoader.cs" />    <Compile Include="Configuration\Fluent\SitecoreClass.cs" />    <Compile Include="Configuration\AbstractConfigurationLoader.cs" />    <Compile Include="Configuration\Attributes\SitecoreLinkedAttribute.cs" />    <Compile Include="Configuration\SitecoreInfoUrlOptions.cs" />    <Compile Include="Configuration\SitecoreLinkedOptions.cs" />    <Compile Include="Configuration\SitecoreProperty.cs" />    <Compile Include="Configuration\SitecoreClassConfig.cs" />    <Compile Include="Context.cs" />    <Compile Include="Dashboard\Controllers\DetailsController.cs" />    <Compile Include="Dashboard\Controllers\ListController.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Controllers\QueryController.cs" />    <Compile Include="Dashboard\Controllers\StaticController.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\DashboardGlobals.cs" />    <Compile Include="Dashboard\DashboardHandler.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\DashboardLoader.cs" />    <Compile Include="Dashboard\DashboardUtilities.cs" />    <Compile Include="Dashboard\DashboardExtensionMethods.cs" />    <Compile Include="Dashboard\Model\Data\ItemData.cs" />    <Compile Include="Dashboard\Model\Data\TemplateData.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassChildren.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassClass.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassClassSummary.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassField.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassInfo.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassItem.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassLinked.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassParent.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\Data\PathQuery.cs" />    <Compile Include="Dashboard\Model\GlassQuery.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Model\GlassQueryResult.cs" />    <Compile Include="Dashboard\Model\GlassTemplate.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Web\AbstractController.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Web\AbstractView.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Web\HtmlView.cs" />    <Compile Include="Dashboard\Web\JsonView.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Dashboard\Web\ManifestView.cs">      <SubType>Code</SubType>    </Compile>    <Compile Include="Data\QueryParameters\ItemEscapedPathParameter.cs" />    <Compile Include="Data\SitecoreFieldLongHandler.cs" />    <Compile Include="Data\SitecoreFieldNameValueCollectionHandler.cs" />    <Compile Include="Data\SitecoreFieldNullableHandler.cs" />    <Compile Include="Data\SitecoreFieldRulesHandler.cs" />    <Compile Include="Data\SitecoreItemHandler.cs" />    <Compile Include="Data\SitecoreLinkedHandler.cs" />    <Compile Include="Data\QueryParameters\ItemIdNoBracketsParameter.cs" />    <Compile Include="Data\QueryParameters\ISitecoreQueryParameter.cs" />    <Compile Include="Data\QueryParameters\ItemDateNowParameter.cs" />    <Compile Include="Data\QueryParameters\ItemIdParameter.cs" />    <Compile Include="Data\QueryParameters\ItemPathParameter.cs" />    <Compile Include="Data\SitecoreChildrenHandler.cs" />    <Compile Include="Data\SitecoreFieldEnumHandler.cs" />    <Compile Include="Data\SitecoreFieldStreamHandler.cs" />    <Compile Include="Data\SitecoreFieldClassHandler.cs" />    <Compile Include="Data\SitecoreFieldDecimalHandler.cs" />    <Compile Include="Data\AbstractSitecoreDataHandler.cs" />    <Compile Include="Data\AbstractSitecoreField.cs" />    <Compile Include="Data\SitecoreFieldBooleanHandler.cs" />    <Compile Include="Data\SitecoreFieldDateTimeHandler.cs" />    <Compile Include="Data\SitecoreFieldDoubleHandler.cs" />    <Compile Include="Data\SitecoreFieldFileHandler.cs" />    <Compile Include="Data\SitecoreFieldFloatHandler.cs" />    <Compile Include="Data\SitecoreFieldGuidHandler.cs" />    <Compile Include="Data\SitecoreFieldIEnumerableHandler.cs" />    <Compile Include="Data\SitecoreFieldImageHandler.cs" />    <Compile Include="Data\SitecoreFieldIntegerHandler.cs" />    <Compile Include="Data\SitecoreFieldLinkHandler.cs" />    <Compile Include="Data\SitecoreFieldTriStateHandler.cs" />    <Compile Include="Data\SitecoreParentHandler.cs" />    <Compile Include="Data\SitecoreIdDataHandler.cs" />    <Compile Include="Data\SitecoreFieldStringHandler.cs" />    <Compile Include="Data\SitecoreInfoHandler.cs" />    <Compile Include="Data\SitecoreQueryHandler.cs" />    <Compile Include="DefaultTypeInferrer.cs" />    <Compile Include="DisplayNameAttribute.cs" />    <Compile Include="ExtensionMethods.cs" />    <Compile Include="FakePropertyInfo.cs" />    <Compile Include="FieldTypes\Blob.cs" />    <Compile Include="FieldTypes\File.cs" />    <Compile Include="FieldTypes\Image.cs" />    <Compile Include="FieldTypes\Link.cs" />    <Compile Include="FieldTypes\LinkType.cs" />    <Compile Include="FieldTypes\TriState.cs" />    <Compile Include="GlassHtml.cs" />    <Compile Include="InstanceContext.cs" />    <Compile Include="ISitecoreContext.cs" />    <Compile Include="ISitecoreService.cs" />    <Compile Include="Enumerable.cs" />    <Compile Include="ItemExtensions.cs" />    <Compile Include="RenderField\AbstractParameters.cs" />    <Compile Include="RenderField\DateParameters.cs" />    <Compile Include="RenderField\ImageParameters.cs" />    <Compile Include="RenderField\LinkParameters.cs" />    <Compile Include="NullLog.cs" />    <Compile Include="PersistenceException.cs" />    <Compile Include="Properties\AssemblyInfo.cs" />    <Compile Include="Proxies\InterfaceMethodInterceptor.cs" />    <Compile Include="Proxies\ProxyBlobInterceptor.cs" />    <Compile Include="Proxies\ProxyClassInterceptor.cs" />    <Compile Include="Proxies\ProxyGenerator.cs" />    <Compile Include="Proxies\ProxyGeneratorHook.cs" />    <Compile Include="Settings.cs" />    <Compile Include="SitecoreContext.cs" />    <Compile Include="SitecoreIdException.cs" />    <Compile Include="SitecoreService.cs" />    <Compile Include="Utility.cs" />    <Compile Include="Web\Ui\AbstractGlassPage.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>    <Compile Include="Web\Ui\AbstractGlassUserControl.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>    <Compile Include="Web\Ui\GlassEditFrame.cs" />    <Compile Include="Web\Ui\GlassPage.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>    <Compile Include="Web\Ui\GlassUserControl.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>  </ItemGroup>  <ItemGroup Condition=" '$(preMVC)' != '1' ">    <Compile Include="Pipelines\Response\GetModel.cs" />    <Compile Include="Web\Mvc\GlassView.cs" />    <Compile Include="Web\Mvc\HtmlHelperExtensions.cs" />    <Compile Include="Web\Mvc\MvcEditFrame.cs" />  </ItemGroup>  <ItemGroup Condition=" '$(Framework)' != 'NET35' ">    <Compile Include="Dynamic\Dy.cs" />    <Compile Include="Dynamic\DynamicCollection.cs" />    <Compile Include="Dynamic\DynamicField.cs" />    <Compile Include="Dynamic\DynamicItem.cs" />    <Compile Include="Web\Ui\GlassDynamicPage.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>    <Compile Include="Web\Ui\GlassDynamicUserControl.cs">      <SubType>ASPXCodeBehind</SubType>    </Compile>  </ItemGroup>  <ItemGroup>    <Compile Include="Configuration\Fluent\AbstractSitecoreAttributeBuilder.cs" />    <Compile Include="Configuration\Fluent\ISitecoreClass.cs" />    <Compile Include="Configuration\Fluent\SitecoreChildren.cs" />    <Compile Include="Configuration\Fluent\SitecoreField.cs" />    <Compile Include="Configuration\Fluent\SitecoreId.cs" />    <Compile Include="Configuration\Fluent\SitecoreInfo.cs" />    <Compile Include="Configuration\Fluent\SitecoreParent.cs" />    <Compile Include="Configuration\Fluent\SitecoreQuery.cs" />  </ItemGroup>  <ItemGroup>    <Folder Include="Dashboard\List\" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Css\Dashboard.css" />    <EmbeddedResource Include="Dashboard\Html\List.htm" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Js\List.js" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Html\HtmlHeader.htm" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Html\HtmlFooter.htm" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Html\Details.htm" />    <EmbeddedResource Include="Dashboard\Js\Details.js" />    <EmbeddedResource Include="Dashboard\Js\General.js" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Html\Query.htm" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Js\Query.js" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="Dashboard\Images\ajax-loader.gif" />  </ItemGroup>  <ItemGroup>    <None Include="packages.config" />  </ItemGroup>  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.        Other similar extension points exist, see Microsoft.Common.targets.  <Target Name="BeforeBuild">  </Target>  <Target Name="AfterBuild">  </Target>  -->  <Target Name="BeforeBuild">    <Message Text="ExtraConstants: $(ExtraConstants)" Importance="high" />    <Message Text="preMVC: $(preMVC)" Importance="high" />    <Message Text="Framework: $(Framework)" Importance="high" />    <Message Text="TargetFrameworkVersion: $(TargetFrameworkVersion)" Importance="high" />  </Target>  <Target Name="AfterBuild" Condition=" '$(nestedbuild)' == '' AND '$(Configuration)' == 'Release'">   <Message Text="----------- done building -------------------- starting next one: ---------------" />    <MSBuild Condition=" '$(Framework)' != 'NET35'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET35;preMVC=1;nestedbuild=1;TargetFrameworkVersion=v3.5" RunEachTargetSeparately="true" />    <MSBuild Condition=" '$(Framework)' == 'NET40' AND '$(preMVC)' == '0'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40;preMVC=1;nestedbuild=1;TargetFrameworkVersion=v4.0" RunEachTargetSeparately="true" />    <MSBuild Condition=" '$(Framework)' == 'NET40' AND '$(preMVC)' == '1'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40;preMVC=0;nestedbuild=1;TargetFrameworkVersion=v4.0" RunEachTargetSeparately="true" />  </Target></Project>
