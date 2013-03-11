@@ -30,8 +30,11 @@ using Sitecore.Configuration;
 using Sitecore.Caching;
 using Glass.Sitecore.Mapper.Configuration;
 using Glass.Sitecore.Mapper.Configuration.Attributes;
+using Sitecore.Globalization;
+using Sitecore.Search;
 using Sitecore.SecurityModel;
- 
+using Version = Sitecore.Data.Version;
+
 namespace Glass.Sitecore.Mapper.CodeFirst
 {
     public class GlassDataProvider : DataProvider
@@ -55,7 +58,6 @@ namespace Glass.Sitecore.Mapper.CodeFirst
         #endregion
 
         #region Fields
-
         // /sitecore/templates/System/Templates/Template field/Data/Title
         private static readonly ID TitleFieldId = new ID("{19A69332-A23E-4E70-8D16-B2640CB24CC8}");
         // /sitecore/templates/System/Templates/Template field/Data/Type
@@ -129,8 +131,31 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             return base.GetItemDefinition(itemId, context);
         }
 
+        public override VersionUriList GetItemVersions(ItemDefinition itemDefinition, CallContext context)
+        {
+            var section = SectionTable.FirstOrDefault(x => x.SectionId == itemDefinition.ID);
+            var field = FieldTable.FirstOrDefault(x=>x.FieldId == itemDefinition.ID);
+            if (field != null || section != null)
+            {
+                //return in every available language
+                var languages = context.DataManager.Database.GetLanguages();
+                if (languages == null)
+                {
+                    return null;
+                }
+                var list = new VersionUriList();
+                foreach (Language language in languages)
+                {
+                    list.Add(language, Version.First);
+                }
+                return list;
+            }
+            return base.GetItemVersions(itemDefinition, context);
+        }
+
         public override LanguageCollection GetLanguages(CallContext context)
         {
+
             return new LanguageCollection();
         }
 
@@ -298,8 +323,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                            
 
                             record = new FieldInfo(new ID(guidId), section.SectionId, fieldName, attr.FieldType, attr.FieldSource, attr.FieldTitle, attr.IsShared, attr.IsUnversioned, attr.FieldSortOrder, attr.ValidationRegularExpression, attr.ValidationErrorText, attr.IsRequired);
-                            var fieldfieldInfoAttributes =
-                                field.Property.GetCustomAttributes(typeof (SitecoreFieldFieldValueAttribute), true);
+                            var fieldfieldInfoAttributes = field.Property.GetCustomAttributes(typeof (SitecoreFieldFieldValueAttribute), true);
                             if (fieldfieldInfoAttributes != null && fieldfieldInfoAttributes.Any())
                             {
                                 foreach (var ffv in fieldfieldInfoAttributes.Cast<SitecoreFieldFieldValueAttribute>())
