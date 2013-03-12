@@ -314,8 +314,16 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                         var existing = otherProvider.GetItemDefinition(new ID(guidId), context);
                         if (existing != null)
                         {
-                            using (new SecurityDisabler())
-                                otherProvider.DeleteItem(existing, context);
+                            ID nullId = null; //hmm, there is a bug in sitecore ID's equality operator
+                            //ONLY delete fields belonging directly to this template!!! if the parent is not in the database OR if it is a codefirst class/section, we can safely delete it to prevent duplicates
+                            var existingParent = otherProvider.GetParentID(existing, context);
+                            if (existingParent == nullId || existingParent == ID.Null ||
+                                this.SectionTable.Any(s => s.SectionId == existing.ID) ||
+                                this.Classes.Any(c => c.Value.TemplateId == existing.ID.ToGuid()))
+                            {
+                                using (new SecurityDisabler())
+                                    otherProvider.DeleteItem(existing, context);
+                            }
                         }
                         if (record == null)
                         {
