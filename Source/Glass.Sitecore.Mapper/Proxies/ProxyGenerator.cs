@@ -43,13 +43,18 @@ namespace Glass.Sitecore.Mapper.Proxies
             }
             else
             {
-                proxy = _generator.CreateClassProxy(type, _options, new ProxyClassInterceptor(type,
+                proxy = _generator.CreateClassProxyWithTarget(type, _options, new ProxyClassInterceptor(type,
                    service,
                    item, inferType));
             }
 
             return proxy;
 
+        }
+
+        public static T Unproxy<T>(object item)
+        {
+            return Castle.DynamicProxy.ProxyUtil.GetUnproxiedInstance(item) as T;
         }
        
     }
