@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Text.RegularExpressions;
 using Sitecore;
 using Sitecore.Data.DataProviders;
 using System.Xml;
@@ -481,7 +482,8 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                          }
                      }
                      
-                     BaseTemplateChecks(clsTemplate, provider, context, cls.Value);
+                     if (cls.Key.GetCustomAttributes(false).FirstOrDefault(y => y is SitecoreClassAttribute) != null)
+                        BaseTemplateChecks(clsTemplate, provider, context, cls.Value);
 
                      //initialize sections and children
                      foreach (ID sectionId in this.GetChildIDsTemplate(cls.Value, clsTemplate, context))
@@ -572,7 +574,8 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                  if (!Classes.ContainsKey(type)) return;
 
                  var baseConfig = Classes[type];
-                 if (baseConfig != null && baseConfig.ClassAttribute.CodeFirst)
+                 //TODO: check if inherited templates inherit this template, maybe fix this in de SitecoreClass attribute (option: inherit all)
+                 if (baseConfig != null && !string.IsNullOrEmpty(baseConfig.ClassAttribute.TemplateId))
                  {
                      if (!baseTemplatesField.Contains(baseConfig.ClassAttribute.TemplateId))
                      {
@@ -593,6 +596,10 @@ namespace Glass.Sitecore.Mapper.CodeFirst
              
 
              config.Type.GetInterfaces().ForEach(x => idCheck(x));
+
+             //if you inherit from a sitecoreclass model it collects it as a 'new' model and results in inheriting itself
+             if (sb.ToString().IndexOf(template.ID.ToString(), StringComparison.InvariantCultureIgnoreCase) > -1)
+                 sb = new StringBuilder(Regex.Replace(sb.ToString(), Regex.Escape(string.Format("|{0}", template.ID)), string.Empty, RegexOptions.IgnoreCase));
 
              if (baseTemplatesField != sb.ToString())
              {
