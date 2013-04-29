@@ -45,14 +45,15 @@ namespace Glass.Sitecore.Mapper.Data
 
         protected Field GetField(Item item)
         {
+            if (item == null || item.Fields == null || item.Template == null)
+                return null;
+
             Field field = null;
             if (ID.IsNullOrEmpty(FieldId))
             {
                 field =  item.Fields[FieldName];
             }
-
             else if(item.Fields.Contains(FieldId) || item.Template.GetField(FieldId) != null)
-
             {
                 field = item.Fields[FieldId];
             }

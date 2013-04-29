@@ -256,7 +256,8 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             var providers = Database.GetDataProviders();
             var otherProvider = providers.FirstOrDefault(x => !(x is GlassDataProvider));
             //If sitecore contains a section with the same name in the database, use that one instead of creating a new one
-            var existing = otherProvider.GetChildIDs(itemDefinition, context).OfType<ID>().Select(id => otherProvider.GetItemDefinition(id, context)).ToList();
+            var otherChildIds = otherProvider.GetChildIDs(itemDefinition, context);
+            var existing = (otherChildIds ?? new IDList()).OfType<ID>().Select(id => otherProvider.GetItemDefinition(id, context)).ToList();
 
             foreach (var section in sections)
             {
