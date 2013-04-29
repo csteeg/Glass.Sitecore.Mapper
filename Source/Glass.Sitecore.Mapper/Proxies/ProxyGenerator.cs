@@ -28,11 +28,12 @@ namespace Glass.Sitecore.Mapper.Proxies
 {
     public class ProxyGenerator
     {
-            private static readonly Castle.DynamicProxy.ProxyGenerator _generator = new Castle.DynamicProxy.ProxyGenerator();
-            private static readonly Castle.DynamicProxy.ProxyGenerationOptions _options = new Castle.DynamicProxy.ProxyGenerationOptions(new ProxyGeneratorHook());
+        private static readonly Castle.DynamicProxy.ProxyGenerator _generator = new Castle.DynamicProxy.ProxyGenerator();
+        private static readonly Castle.DynamicProxy.ProxyGenerationOptions _options = new Castle.DynamicProxy.ProxyGenerationOptions(new ProxyGeneratorHook());
 
-       
-        public static object CreateProxy(SitecoreClassConfig config,  ISitecoreService service, Item item, bool inferType){
+
+        public static object CreateProxy(SitecoreClassConfig config, ISitecoreService service, Item item, bool inferType)
+        {
             object proxy = null;
 
             Type type = config.Type;
@@ -43,7 +44,7 @@ namespace Glass.Sitecore.Mapper.Proxies
             }
             else
             {
-                proxy = _generator.CreateClassProxyWithTarget(type, _options, new ProxyClassInterceptor(type,
+                proxy = _generator.CreateClassProxy(type, _options, new ProxyClassInterceptor(type,
                    service,
                    item, inferType));
             }
@@ -52,10 +53,5 @@ namespace Glass.Sitecore.Mapper.Proxies
 
         }
 
-        public static T Unproxy<T>(object item)
-        {
-            return Castle.DynamicProxy.ProxyUtil.GetUnproxiedInstance(item) as T;
-        }
-       
     }
 }
