@@ -15,6 +15,7 @@
  
 */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
 {
     public class FieldInfo
     {
-        public FieldInfo(ID fieldId, ID sectionId, string name, SitecoreFieldType type, string source, string title, bool isShared, bool isUnversioned)
+        public FieldInfo(ID fieldId, ID sectionId, string name, SitecoreFieldType type, string source, string title, bool isShared, bool isUnversioned, int fieldSortOrder, string validationRegularExpression, string validationErrorText, bool isRequired)
         {
             FieldId = fieldId;
             SectionId = sectionId;
@@ -35,6 +36,11 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             Title = title;
             IsShared = isShared;
             IsUnversioned = isUnversioned;
+            FieldFieldValues = new Dictionary<Guid, string>();
+            FieldSortOrder = fieldSortOrder;
+            ValidationRegularExpression = validationRegularExpression;
+            ValidationErrorText = validationErrorText;
+            IsRequired = isRequired;
         }
 
         public ID FieldId { get; set; }
@@ -46,6 +52,12 @@ namespace Glass.Sitecore.Mapper.CodeFirst
         public bool IsShared { get; set; }
         public bool IsUnversioned { get; set; }
 
+        public Dictionary<Guid,string> FieldFieldValues { get; protected set; }
+
+        public int FieldSortOrder { get; set; }
+        public string ValidationRegularExpression { get; set; }
+        public string ValidationErrorText { get; set; }
+        public bool IsRequired { get; set; }
 
         public static string GetFieldType(SitecoreFieldType type)
         {

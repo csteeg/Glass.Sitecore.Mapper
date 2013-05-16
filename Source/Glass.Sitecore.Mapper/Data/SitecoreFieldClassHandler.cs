@@ -46,8 +46,7 @@ namespace Glass.Sitecore.Mapper.Data
             if (fieldValue.IsNullOrEmpty()) return null;
 
             Guid id = Guid.Empty;
-            if (Guid.TryParse(fieldValue, out id))
-            {
+            if (Utility.GuidTryParse(fieldValue, out id)) {
                 target = item.Database.GetItem(new ID(id), item.Language);
             }
             else

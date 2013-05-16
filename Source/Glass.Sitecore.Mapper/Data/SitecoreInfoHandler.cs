@@ -33,7 +33,7 @@ namespace Glass.Sitecore.Mapper.Data
             set;
         }
 
-        public UrlOptions UrlOptions
+        public global::Sitecore.Links.UrlOptions UrlOptions
         {
             get;
             set;
@@ -49,9 +49,13 @@ namespace Glass.Sitecore.Mapper.Data
            return GetItemInfo(InfoType, item, this.UrlOptions);
         }
 
-        public static object GetItemInfo(SitecoreInfoType infoType, Item item, UrlOptions urlOptions)
+        public static object GetItemInfo(SitecoreInfoType infoType, Item item, global::Sitecore.Links.UrlOptions urlOptions)
         {
+            
             if (urlOptions == null) urlOptions = new UrlOptions();
+
+            if(urlOptions.Language == null)
+                urlOptions.Language = item.Language;
 
             switch (infoType)
             {

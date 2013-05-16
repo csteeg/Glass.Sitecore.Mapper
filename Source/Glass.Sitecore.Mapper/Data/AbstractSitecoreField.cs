@@ -46,14 +46,16 @@ namespace Glass.Sitecore.Mapper.Data
         protected Field GetField(Item item)
         {
             Field field = null;
-           
             if (ID.IsNullOrEmpty(FieldId))
             {
                 field =  item.Fields[FieldName];
             }
-            else if(item.Fields.Contains(FieldId) || item.Template.OwnFields.Any(fld => fld.ID.ToGuid() == FieldId.ToGuid()))
+
+            else if(item.Fields.Contains(FieldId) || item.Template.GetField(FieldId) != null)
+
             {
                 field = item.Fields[FieldId];
+                FieldName = field.Name;
             }
          
 
@@ -111,8 +113,7 @@ namespace Glass.Sitecore.Mapper.Data
             {
                 Guid id = Guid.Empty;
 
-                if (Guid.TryParse(attr.FieldId, out id))
-                {
+                if (Utility.GuidTryParse(attr.FieldId, out id)) {
                     FieldId = new ID(id);
                 }
                 else

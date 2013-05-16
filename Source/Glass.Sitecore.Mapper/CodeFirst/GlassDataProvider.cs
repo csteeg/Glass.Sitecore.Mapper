@@ -13,12 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  
-*/
+*/ 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Sitecore;
 using Sitecore.Data.DataProviders;
 using System.Xml;
@@ -30,7 +31,7 @@ using Sitecore.Caching;
 using Glass.Sitecore.Mapper.Configuration;
 using Glass.Sitecore.Mapper.Configuration.Attributes;
 using Sitecore.SecurityModel;
-
+ 
 namespace Glass.Sitecore.Mapper.CodeFirst
 {
     public class GlassDataProvider : DataProvider
@@ -65,11 +66,25 @@ namespace Glass.Sitecore.Mapper.CodeFirst
         private static readonly ID SourceFieldId = new ID("{1EB8AE32-E190-44A6-968D-ED904C794EBF}");
         // /sitecore/templates/System/Templates/Sections/Appearance/Appearance/__Read Only
         private static readonly ID ReadOnlyFieldId = new ID("{9C6106EA-7A5A-48E2-8CAD-F0F693B1E2D4}");
+        // /sitecore/templates/System/Templates/Sections/Appearance/Appearance/__Sortorder
+        private static readonly ID SortOrderFieldId = new ID("{BA3F86A2-4A1C-4D78-B63D-91C2779C1B5E}");
+
+        // /sitecore/templates/System/Templates/Template field/Validation Rules/Quick Action Bar
+        private static readonly ID QuickActionBarFieldId = new ID("{337E20E1-999A-4EEA-85AD-B58A03AE75CC}");
+        // /sitecore/templates/System/Templates/Template field/Validation Rules/Validate Button
+        private static readonly ID ValidateButtonFieldId = new ID("{21828437-EA4B-40A1-8C61-4CE60EA41DB6}");
+        // /sitecore/templates/System/Templates/Template field/Validation Rules/Validator Bar
+        private static readonly ID ValidatorBarFieldId = new ID("{9C903E29-650D-4AF2-B9BD-526D5C14A1A5}");
+        // /sitecore/templates/System/Templates/Template field/Validation Rules/Workflow
+        private static readonly ID WorkflowFieldId = new ID("{53C432C4-7122-4E2D-8296-DB4184FD1735}");
+
         #endregion
 
 
         #endregion
 
+        public static readonly string IsRequiredId = "{59D4EE10-627C-4FD3-A964-61A88B092CBC}";
+        
         public static readonly ID GlassFolderId = new ID("{19BC20D3-CCAB-4048-9CA9-4AA631AB109F}");
 
         public string DatabaseName { get; private set; }
@@ -123,13 +138,14 @@ namespace Glass.Sitecore.Mapper.CodeFirst
 
         public override global::Sitecore.Data.FieldList GetItemFields(global::Sitecore.Data.ItemDefinition itemDefinition, global::Sitecore.Data.VersionUri versionUri, CallContext context)
         {
-
+            Setup(context);
+            
             FieldList fields = new FieldList();
 
             var sectionInfo = SectionTable.FirstOrDefault(x => x.SectionId == itemDefinition.ID);
             if (sectionInfo != null)
             {
-                GetStandardFields(fields);
+                GetStandardFields(fields, sectionInfo.SectionSortOrder >= 0 ? sectionInfo.SectionSortOrder : (SectionTable.IndexOf(sectionInfo) + 100));
 
                 return fields;
             }
@@ -137,7 +153,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             var fieldInfo = FieldTable.FirstOrDefault(x => x.FieldId == itemDefinition.ID);
             if (fieldInfo != null)
             {
-                GetStandardFields(fields);
+                GetStandardFields(fields, fieldInfo.FieldSortOrder >= 0 ? fieldInfo.FieldSortOrder : (FieldTable.IndexOf(fieldInfo) + 100));
                 GetFieldFields(fieldInfo, fields);
                 return fields;
             }
@@ -145,10 +161,10 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             return base.GetItemFields(itemDefinition, versionUri, context);
         }
 
-        private void GetStandardFields(FieldList fields)
+        private void GetStandardFields(FieldList fields, int index)
         {
-   
             fields.Add(ReadOnlyFieldId, "1");
+            fields.Add(SortOrderFieldId, index.ToString());
         }
 
         private void GetFieldFields(FieldInfo info, FieldList fields){
@@ -162,8 +178,21 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                 fields.Add(SourceFieldId, info.Source);
 
             fields.Add(TemplateFieldIDs.Shared, info.IsShared ? "1" : "0");
-
             fields.Add(TemplateFieldIDs.Unversioned, info.IsUnversioned ? "1" : "0");
+            foreach (var fieldFieldValue in info.FieldFieldValues)
+            {
+                fields.Add(ID.Parse(fieldFieldValue.Key), fieldFieldValue.Value);
+            }
+            fields.Add(TemplateFieldIDs.Validation, info.ValidationRegularExpression ?? "");
+            fields.Add(TemplateFieldIDs.ValidationText, info.ValidationErrorText ?? "");
+
+            if (info.IsRequired)
+            {
+                fields.Add(QuickActionBarFieldId, IsRequiredId);
+                fields.Add(ValidateButtonFieldId, IsRequiredId);
+                fields.Add(ValidatorBarFieldId, IsRequiredId);
+                fields.Add(WorkflowFieldId, IsRequiredId);
+            }
         }
 
         #endregion
@@ -172,23 +201,24 @@ namespace Glass.Sitecore.Mapper.CodeFirst
 
         public override global::Sitecore.Collections.IDList GetChildIDs(global::Sitecore.Data.ItemDefinition itemDefinition, CallContext context)
         {
+            Setup(context);
 
             if(Classes.Any(x => x.Value.TemplateId == itemDefinition.ID.Guid)){
                 var cls = Classes.First(x => x.Value.TemplateId == itemDefinition.ID.Guid).Value;
-                return GetChildIDsTemplate(cls, itemDefinition);
+                return GetChildIDsTemplate(cls, itemDefinition, context);
             }
 
             var section = SectionTable.FirstOrDefault(x => x.SectionId == itemDefinition.ID);
 
             if (section != null)
             {
-               return GetChildIDsSection(itemDefinition, section);
+               return GetChildIDsSection(section, context);
             }
              
             return base.GetChildIDs(itemDefinition, context);
         }
 
-        private IDList GetChildIDsTemplate(SitecoreClassConfig template, ItemDefinition itemDefinition)
+        private IDList GetChildIDsTemplate(SitecoreClassConfig template, ItemDefinition itemDefinition, CallContext context)
         {
             IDList fields = new IDList();
 
@@ -196,54 +226,91 @@ namespace Glass.Sitecore.Mapper.CodeFirst
             var sections = template.Properties
                 .Where(x=>x.Property.DeclaringType == template.Type)
                 .Select(x=>x.Attribute).OfType<SitecoreFieldAttribute>()
-                .Select(x => x.SectionName);
+                .Select(x => new { x.SectionName, x.SectionSortOrder });
+
+            var providers = Database.GetDataProviders();
+            var otherProvider = providers.FirstOrDefault(x => !(x is GlassDataProvider));
+            //If sitecore contains a section with the same name in the database, use that one instead of creating a new one
+            var existing = otherProvider.GetChildIDs(itemDefinition, context).OfType<ID>().Select(id => otherProvider.GetItemDefinition(id, context)).ToList();
 
             foreach (var section in sections)
             {
-                if (processed.Contains(section) || section.IsNullOrEmpty())
+                if (processed.Contains(section.SectionName) || section.SectionName.IsNullOrEmpty())
                     continue;
 
-                var record = SectionTable.FirstOrDefault(x => x.TemplateId == itemDefinition.ID && x.Name == section);
+                var record = SectionTable.FirstOrDefault(x => x.TemplateId == itemDefinition.ID && x.Name == section.SectionName);
 
                 if (record == null)
                 {
-                    record = new SectionInfo(section, new ID(Guid.NewGuid()), itemDefinition.ID);
+                    
+                    var exists = existing.FirstOrDefault(def => def.Name.Equals(section));
+                    if (exists != null)
+                    {
+                      
+                        record =  new SectionInfo(section.SectionName, exists.ID, itemDefinition.ID, section.SectionSortOrder){Existing = true};
+                    }
+                    else
+                    {
+                       
+                        record = new SectionInfo(section.SectionName, new ID(Guid.NewGuid()), itemDefinition.ID, section.SectionSortOrder);
+                    }
                     SectionTable.Add(record);
                 }
-                processed.Add(section);
-                fields.Add(record.SectionId);
+                processed.Add(section.SectionName);
+                if (!record.Existing)
+                    fields.Add(record.SectionId);
             }
             return fields;
         }
 
-        private IDList GetChildIDsSection(ItemDefinition itemDefinition, SectionInfo section)
+        private IDList GetChildIDsSection(SectionInfo section, CallContext context)
         {
-
             var cls = Classes.First(x => x.Value.TemplateId == section.TemplateId.Guid).Value;
 
             var fields = cls.Properties.Where(x=>x.Attribute is SitecoreFieldAttribute);
 
             IDList fieldIds = new IDList();
 
+            var providers = Database.GetDataProviders();
+            var otherProvider = providers.FirstOrDefault(x => !(x is GlassDataProvider));
 
             foreach (var field in fields)
             {
                 if (field.Property.DeclaringType != cls.Type)
                     continue;
 
+
                 var attr = field.Attribute as SitecoreFieldAttribute;
-                if (attr != null && attr.CodeFirst && attr.SectionName == itemDefinition.Name)
+                if (attr != null && attr.CodeFirst && attr.SectionName == section.Name)
                 {
 
-                    Guid guidId;
-                    if (Guid.TryParse(attr.FieldId, out guidId))
+                    Guid guidId = Guid.Empty;
+                    if (Utility.GuidTryParse(attr.FieldId, out guidId))
                     {
                         var record = FieldTable.FirstOrDefault(x => x.FieldId.Guid == guidId);
-
+                        //test if the fields exists in the database: if so, we're using codefirst now, so remove it.
+                        var existing = otherProvider.GetItemDefinition(new ID(guidId), context);
+                        if (existing != null)
+                        {
+                            using (new SecurityDisabler())
+                                otherProvider.DeleteItem(existing, context);
+                        }
                         if (record == null)
                         {
                             string fieldName = attr.FieldName.IsNullOrEmpty() ? field.Property.Name : attr.FieldName;
-                            record = new FieldInfo(new ID(guidId), itemDefinition.ID, fieldName, attr.FieldType, attr.FieldSource, attr.FieldTitle, attr.IsShared, attr.IsUnversioned);
+                           
+
+                            record = new FieldInfo(new ID(guidId), section.SectionId, fieldName, attr.FieldType, attr.FieldSource, attr.FieldTitle, attr.IsShared, attr.IsUnversioned, attr.FieldSortOrder, attr.ValidationRegularExpression, attr.ValidationErrorText, attr.IsRequired);
+                            var fieldfieldInfoAttributes =
+                                field.Property.GetCustomAttributes(typeof (SitecoreFieldFieldValueAttribute), true);
+                            if (fieldfieldInfoAttributes != null && fieldfieldInfoAttributes.Any())
+                            {
+                                foreach (var ffv in fieldfieldInfoAttributes.Cast<SitecoreFieldFieldValueAttribute>())
+                                {
+                                    record.FieldFieldValues.Add(ffv.FieldId, ffv.FieldValue);
+                                }
+                            }
+                          
                         }
 
                         fieldIds.Add(record.FieldId);
@@ -251,7 +318,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                     }
                 }
 
-                
+
             }
 
             return fieldIds;
@@ -261,6 +328,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
 
         public override global::Sitecore.Data.ID GetParentID(global::Sitecore.Data.ItemDefinition itemDefinition, CallContext context)
         {
+            Setup(context);
             var section = SectionTable.FirstOrDefault(x => x.SectionId == itemDefinition.ID);
 
             if (section != null)
@@ -298,23 +366,23 @@ namespace Glass.Sitecore.Mapper.CodeFirst
              return false;
          }
 
-         public static readonly object _setupLock = new object();
-         public static bool _setupComplete = false;
-         public static bool _setupProcessing = false;
+         public readonly object _setupLock = new object();
+         public bool _setupComplete = false;
+         public bool _setupProcessing = false;
 
-         public void Setup(CallContext context)
+        public void Setup(CallContext context)
          {
              if (_setupComplete || _setupProcessing) return;
 
-             _setupProcessing = true;
-
              lock (_setupLock)
              {
-                 if (_setupComplete) return;
+                 if (_setupComplete || _setupProcessing) return;
 
+                 _setupProcessing = true;
+                 
                  global::Sitecore.Diagnostics.Log.Info("Started CodeFirst setup", this);
 
-                 var providers = Database.GetDataProviders();
+                 var providers = Factory.GetDatabase("master").GetDataProviders();
                  var provider = providers.FirstOrDefault(x => !(x is GlassDataProvider));
 
                  var templateFolder = provider.GetItemDefinition(TemplateFolderId, context);
@@ -340,17 +408,18 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                          namespaces = namespaces.SkipWhile(x => x != "Templates").Skip(1);
 
                          ItemDefinition containing = glassFolder;
-
+                         var children = provider.GetChildIDs(containing, context);
                          foreach (var ns in namespaces)
                          {
-                             var children = provider.GetChildIDs(containing, context);
-
                              ItemDefinition found = null;
                              foreach (ID child in children)
                              {
-                                 var childDef = provider.GetItemDefinition(child, context);
-                                 if (childDef.Name == ns)
-                                     found = childDef;
+                                     if (!ID.IsNullOrEmpty(child))
+                                     {
+										 var childDef = provider.GetItemDefinition(child, context);
+										 if (childDef.Name == ns)
+											 found = childDef;
+                                     }
                              }
 
                              if (found == null)
@@ -372,7 +441,7 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                          provider.CreateItem(new ID(cls.Value.TemplateId), templateName, TemplateTemplateId, containing, context);
                          clsTemplate = provider.GetItemDefinition(new ID(cls.Value.TemplateId), context);
                          //Assign the base template
-                         var templateItem  = Database.GetItem(clsTemplate.ID);
+                         var templateItem = Factory.GetDatabase("master").GetItem(clsTemplate.ID);
 
                          using (new SecurityDisabler())
                          {
@@ -381,12 +450,18 @@ namespace Glass.Sitecore.Mapper.CodeFirst
                              templateItem.Editing.EndEdit();
                          }
                      }
-
+                     
                      BaseTemplateChecks(clsTemplate, provider, context, cls.Value);
 
+                     //initialize sections and children
+                     foreach (ID sectionId in this.GetChildIDsTemplate(cls.Value, clsTemplate, context))
+                     {
+                         this.GetChildIDsSection(SectionTable.First(s => s.SectionId == sectionId), context);
+                     }
                  }
 
-                 RemoveDeletedClasses(glassFolder, provider, context);
+                 if (global::Sitecore.Configuration.Settings.GetBoolSetting("AutomaticallyRemoveDeletedTemplates", true))
+                    RemoveDeletedClasses(glassFolder, provider, context);
 
                  global::Sitecore.Diagnostics.Log.Info("Finished CodeFirst setup", this);
 
@@ -449,9 +524,9 @@ namespace Glass.Sitecore.Mapper.CodeFirst
          {
              //check base templates
 
-            
 
-             var templateItem = Database.GetItem(template.ID);
+
+             var templateItem = Factory.GetDatabase("master").GetItem(template.ID);
 
 
              var baseTemplatesField = templateItem[BaseTemplatesFieldId];
